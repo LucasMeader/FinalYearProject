@@ -1,30 +1,17 @@
 close all
 clear all
 
-cd /vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/bUseful
+cd /vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful
 
 wrongType = cell(122727,1);
 
 D = dir;
 D = D(~ismember({D.name}, {'.', '..'}));
-for k = 196:numel(D)                                               %1:122727
+for k = 1 %1:numel(D)                                               %1:122727
     subject = D(k).name
     dir(subject);
     
-    cropMovedCCL = 0;
-    cropMovedCCR = 0;
-    cropMovedMLOL = 0;
-    cropMovedMLOR = 0;
-    fullImageMovedCCL = 0;
-    fullImageMovedCCR = 0;
-    fullImageMovedMLOL = 0;
-    fullImageMovedMLOR = 0;
-    noProPairCCL = 0;
-    noProPairCCR = 0;
-    noProPairMLOL = 0;
-    noProPairMLOR = 0;
-    
-    infoFileName = strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/bUseful/', subject);
+    infoFileName = strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful/', subject);
     cd(infoFileName)
     % CC 
     if isequal(exist('CCpair', 'dir'),7) % 7 means its a folder and exists
@@ -33,72 +20,91 @@ for k = 196:numel(D)                                               %1:122727
         % CC PAIR LEFT
         if isequal(exist('left', 'dir'),7) % if left folder exists       
             cd('left')                      % move into it
-            mkdir processedPair             % make a folder called processedPair for the crop and full image to go into
-            fprintf('left CC folder exists\n');
-            if isequal(exist('croppedProSpotImage', 'dir'),7)
-                cd('croppedProSpotImage');
-                a = dir('*.dcm');
-                jsonMessedFlag = length(dir('*.dcm.json'));
-                %numberOfDCMInFolder = numel(a);
-                for file = 1:min(2, length(a))
-                    % Moving the processed cropped image to processedPair
-                    % folder
-                    imageFilePath = string(a(file).name);
-                    processedPairLocation = fullfile(strcat(infoFileName, '/CCpair', '/left', '/processedPair'));
-                    copyfile(imageFilePath, processedPairLocation);
-                    % Moving the corisponding json to the processedPair
-                    % folder
-                    jsonFilePath = fullfile(strcat(infoFileName, '/CCpair', '/left', '/spotImage/'));
-                    [filepath,fileName,ext] = fileparts(imageFilePath);
-                    newStr = erase(fileName, 'cropped.');
-                    jsonFilePath = strcat(jsonFilePath, newStr, '.json');
-                    copyfile(jsonFilePath, processedPairLocation);
-                    
-                    cropMovedCCL = 1;
-                end
-                cd ..
-            end        
             
-            if isequal(exist('fullImage', 'dir'),7)
-                cd fullImage
-                a = dir('*.dcm');
-                jsonMessedFlag = length(dir('*.dcm.json'));           
-                %numberOfDCMInFolder = numel(a);
-                for file = 1:min(2, length(a))
-                    % Moving the processed full image to the processedPair
-                    % folder
-                    imageFilePath = string(a(file).name);
-                    dicomInfo = dicominfo(imageFilePath);
-
-                    presentationIntentType = string(dicomInfo.PresentationIntentType);
-                    presentationFlag = strfind(presentationIntentType, 'PRESENTATION');
-
-                    if presentationFlag > 0           
-                        processedPairLocation = fullfile(strcat(infoFileName, '/CCpair', '/left', '/processedPair'));
-                        copyfile(imageFilePath, processedPairLocation);
-                        % Moving the corisponding json to the processedPair
-                        % folder
-                        [filepath,fileName,ext] = fileparts(imageFilePath);
-                        if jsonMessedFlag > 0
-                            fileName = strcat(fileName, '.dcm');
-                        end
-                        jsonFilePath = strcat(fileName, '.json');
-                        copyfile(jsonFilePath, processedPairLocation);
-
-                        fullImageMovedCCL = 1;
+            if isequal(exist('processedPair', 'dir'),7)
+                fprintf('Processed Pair Exists');
+                cd('processedPair');
+                dcmFiles = dir('*.dcm');
+                for currentFile = 1:2
+                    fileName = dcmFiles(currentFile).name;
+                    cropFlag = strfind(fileName, 'cropped.');
+                    if cropFlag > 0
+                        croppedSpotFileName = dcmFiles(currentFile).name;
+                        croppedSpotImageFilePath = fullfile(strcat(infoFileName, '/CCpair', '/left', '/processedPair/', croppedSpotFileName))
+                        croppedSpotImage = dicomread(croppedSpotImageFilePath);
+                    else
+                        fullImageFileName = dcmFiles(currentFile).name;
+                        fullImageFilePath = fullfile(strcat(infoFileName, '/CCpair', '/left', '/processedPair/', fullImageFileName))
+                        fullImage = dicomread(fullImageFilePath);
+                        % Obtaining image size data
+                        [imageHight, imageWidth, imageDepth] = size(fullImage);
+                    end
+                end   
+                jsonFiles = dir('*.json');
+                for currentFile = 1:size(jsonFiles)
+                    fileName = jsonFiles(currentFile).name;
+                    coordinateFlag = strfind(fileName, 'coordinates');
+                    if coordinateFlag > 0
+                        coordinateFilePath = jsonFiles(currentFile).name;
                     end
                 end
-                cd ..
-            end
-            if cropMovedCCL == 0 | fullImageMovedCCL == 0
-                noProPairCCL = 1;
-                rmdir processedPair s
-            end
+
+                jsonText = fileread('coordinates.json');
+                coordinateStruct = jsondecode(jsonText);
+                X1 = str2double(coordinateStruct.X1)
+                X2 = str2double(coordinateStruct.X2)
+                Y1 = str2double(coordinateStruct.Y1)
+                Y2 = str2double(coordinateStruct.Y2)
+                
+                % Coordinate border for visualisation
+                XI = [X1, X2, X2, X1, X1];
+                YI = [Y1, Y1, Y2, Y2, Y1];
+                
+                %             rectangle            top left      width hight
+                cropOfFullView = imcrop(fullImage,  [X1 Y1       X2-X1 Y2-Y1]);
+
+                % Resize spotView image in   percentage
+                %downSizedCroppedSpot = imresize(croppedSpot, 1);
+                
+                % Centre of the coordinate rectangle
+                coordxCentre = ((X2+X1)/2);
+                coordyCentre = ((Y2+Y1)/2);
+                
+                % Calculate SSD and NCC between Template and Image
+                [I_SSD,I_NCC] = template_matching(croppedSpotImage,fullImage);
+                
+                % Find maximum correspondence in I_SDD image
+                [cropxCentre, cropyCentre] = find(I_SSD == max(I_SSD(:)));
+                
+                deltaX = max(coordxCentre, cropxCentre) - min(coordxCentre, cropxCentre);
+                deltaY = max(coordyCentre, cropyCentre) - min(coordyCentre, cropyCentre);
+
+                distanceBetweenCentres = sqrt(deltaX^2 + deltaY^2);
+                
+                TWOPI = 6.2831853071795865;
+                RAD2DEG = 57.2957795130823209;
+                theta = atan2(X1-X2, Y1-Y1);
+                if theta < 0.0
+                    theta = theta+TWOPI ;
+                end
+                thetaInDegrees = RAD2DEG*theta
+                
+                figure, % Display image with location of desired profile lines
+                imshow(I_SSD, []); title('SSD Matching'); hold on; line([coordxCentre, coordxCentre], [imageHight, 0]); hold on; line([0, imageWidth], [coordyCentre, coordyCentre]); hold on; plot(cropyCentre,cropxCentre,'bo'); hold on; plot(XI, YI, 'g-', 'LineWidth', 1);
+                colorbar;
+                figure,
+                subplot(2,1,1), improfile(I_SSD, [coordxCentre, coordxCentre], [imageHight, 0]); title('X Profile');
+                subplot(2,1,2), improfile(I_SSD, [0, imageWidth], [coordyCentre, coordyCentre]); title('Y Profile');
+                figure,
+                subplot(2,1,1), imshow(cropOfFullView, []); title('Coordinate Patch');
+                subplot(2,1,2), imshow(croppedSpotImage, []); title('Spot Patch');
+                %cd .. !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            end        
+           
             cd ..
             
         else 
             fprintf('No CC left folder\n');
-            noProPairCCL = 1;
         end
         
         % CC PAIR RIGHT
@@ -108,13 +114,13 @@ for k = 196:numel(D)                                               %1:122727
             fprintf('right CC folder exists\n');
             if isequal(exist('croppedProSpotImage', 'dir'),7)
                 cd('croppedProSpotImage');
-                a = dir('*.dcm');
-                jsonMessedFlag = length(dir('*.dcm.json'));
+                dcmFiles = dir('*.dcm');
+                
                 %numberOfDCMInFolder = numel(a);
-                for file = 1:min(2, length(a))
+                for currentFile = 1:min(2, length(dcmFiles))
                     % Moving the processed cropped image to processedPair
                     % folder
-                    imageFilePath = string(a(file).name);
+                    imageFilePath = string(dcmFiles(currentFile).name);
                     processedPairLocation = fullfile(strcat(infoFileName, '/CCpair', '/right', '/processedPair'));
                     copyfile(imageFilePath, processedPairLocation);
                     % Moving the corisponding json to the processedPair
@@ -122,9 +128,7 @@ for k = 196:numel(D)                                               %1:122727
                     jsonFilePath = fullfile(strcat(infoFileName, '/CCpair', '/right', '/spotImage/'));
                     [filepath,fileName,ext] = fileparts(imageFilePath);
                     newStr = erase(fileName, 'cropped.');
-                    if jsonMessedFlag > 0
-                        fileName = strcat(newStr, '.dcm');
-                    end
+
                     jsonFilePath = strcat(jsonFilePath, newStr, '.json');
                     copyfile(jsonFilePath, processedPairLocation);
                     
@@ -135,28 +139,26 @@ for k = 196:numel(D)                                               %1:122727
             
             if isequal(exist('fullImage', 'dir'),7)
                 cd fullImage
-                a = dir('*.dcm');
-                jsonMessedFlag = length(dir('*.dcm.json'));
-                numberOfDCMInFolder = numel(a);
-                for file = 1:min(2, length(a))
+                dcmFiles = dir('*.dcm');
+                
+                numberOfDCMInFolder = numel(dcmFiles);
+                for currentFile = 1:min(2, length(dcmFiles))
                     % Moving the processed full image to the processedPair
                     % folder
-                    imageFilePath = string(a(file).name);
+                    imageFilePath = string(dcmFiles(currentFile).name);
                     dicomInfo = dicominfo(imageFilePath);
 
                     presentationIntentType = string(dicomInfo.PresentationIntentType);
                     presentationFlag = strfind(presentationIntentType, 'PRESENTATION');
 
                     if presentationFlag > 0                     
-                        imageFilePath = string(a(file).name);
+                        imageFilePath = string(dcmFiles(currentFile).name);
                         processedPairLocation = fullfile(strcat(infoFileName, '/CCpair', '/right', '/processedPair'));
                         copyfile(imageFilePath, processedPairLocation);
                         % Moving the corisponding json to the processedPair
                         % folder
                         [filepath,fileName,ext] = fileparts(imageFilePath);
-                        if jsonMessedFlag > 0
-                            fileName = strcat(fileName, '.dcm');
-                        end
+
                         jsonFilePath = strcat(fileName, '.json');
                         copyfile(jsonFilePath, processedPairLocation);
 
@@ -188,13 +190,13 @@ for k = 196:numel(D)                                               %1:122727
             fprintf('left MLO folder exists\n');
             if isequal(exist('croppedProSpotImage', 'dir'),7)
                 cd('croppedProSpotImage');
-                a = dir('*.dcm');
-                jsonMessedFlag = length(dir('*.dcm.json'));
+                dcmFiles = dir('*.dcm');
+                
                 %numberOfDCMInFolder = numel(a);
-                for file = 1:min(2, length(a))
+                for currentFile = 1:min(2, length(dcmFiles))
                     % Moving the processed cropped image to processedPair
                     % folder
-                    imageFilePath = string(a(file).name);
+                    imageFilePath = string(dcmFiles(currentFile).name);
                     processedPairLocation = fullfile(strcat(infoFileName, '/MLOpair', '/left', '/processedPair'));
                     copyfile(imageFilePath, processedPairLocation);
                     % Moving the corisponding json to the processedPair
@@ -202,9 +204,7 @@ for k = 196:numel(D)                                               %1:122727
                     jsonFilePath = fullfile(strcat(infoFileName, '/MLOpair', '/left', '/spotImage/'));
                     [filepath,fileName,ext] = fileparts(imageFilePath);
                     newStr = erase(fileName, 'cropped.');
-                    if jsonMessedFlag > 0
-                        fileName = strcat(newStr, '.dcm');
-                    end
+                   
                     jsonFilePath = strcat(jsonFilePath, newStr, '.json');
                     copyfile(jsonFilePath, processedPairLocation);
                     
@@ -215,28 +215,26 @@ for k = 196:numel(D)                                               %1:122727
             
             if isequal(exist('fullImage', 'dir'),7)
                 cd fullImage
-                a = dir('*.dcm');
-                jsonMessedFlag = length(dir('*.dcm.json'));
-                numberOfDCMInFolder = numel(a);
-                for file = 1:min(2, length(a))
+                dcmFiles = dir('*.dcm');
+                
+                numberOfDCMInFolder = numel(dcmFiles);
+                for currentFile = 1:min(2, length(dcmFiles))
                     % Moving the processed full image to the processedPair
                     % folder
-                    imageFilePath = string(a(file).name);
+                    imageFilePath = string(dcmFiles(currentFile).name);
                     dicomInfo = dicominfo(imageFilePath);
 
                     presentationIntentType = string(dicomInfo.PresentationIntentType);
                     presentationFlag = strfind(presentationIntentType, 'PRESENTATION');
 
                     if presentationFlag > 0                     
-                        imageFilePath = string(a(file).name);
+                        imageFilePath = string(dcmFiles(currentFile).name);
                         processedPairLocation = fullfile(strcat(infoFileName, '/MLOpair', '/left', '/processedPair'));
                         copyfile(imageFilePath, processedPairLocation);
                         % Moving the corisponding json to the processedPair
                         % folder
                         [filepath,fileName,ext] = fileparts(imageFilePath);
-                        if jsonMessedFlag > 0
-                            fileName = strcat(fileName, '.dcm');
-                        end                    
+             
                         jsonFilePath = strcat(fileName, '.json');
                         copyfile(jsonFilePath, processedPairLocation);
 
@@ -262,13 +260,13 @@ for k = 196:numel(D)                                               %1:122727
             fprintf('left MLO folder exists\n');
             if isequal(exist('croppedProSpotImage', 'dir'),7)
                 cd('croppedProSpotImage');
-                a = dir('*.dcm');
-                jsonMessedFlag = length(dir('*.dcm.json'));
+                dcmFiles = dir('*.dcm');
+                
                 %numberOfDCMInFolder = numel(a);
-                for file = 1:min(2, length(a))
+                for currentFile = 1:min(2, length(dcmFiles))
                     % Moving the processed cropped image to processedPair
                     % folder
-                    imageFilePath = string(a(file).name);
+                    imageFilePath = string(dcmFiles(currentFile).name);
                     processedPairLocation = fullfile(strcat(infoFileName, '/MLOpair', '/right', '/processedPair'));
                     copyfile(imageFilePath, processedPairLocation);
                     % Moving the corisponding json to the processedPair
@@ -276,9 +274,7 @@ for k = 196:numel(D)                                               %1:122727
                     jsonFilePath = fullfile(strcat(infoFileName, '/MLOpair', '/right', '/spotImage/'));
                     [filepath,fileName,ext] = fileparts(imageFilePath);
                     newStr = erase(fileName, 'cropped.');
-                    if jsonMessedFlag > 0
-                        fileName = strcat(newStr, '.dcm');
-                    end
+                    
                     jsonFilePath = strcat(jsonFilePath, newStr, '.json');
                     copyfile(jsonFilePath, processedPairLocation);
                     
@@ -289,28 +285,26 @@ for k = 196:numel(D)                                               %1:122727
             
             if isequal(exist('fullImage', 'dir'),7)
                 cd fullImage
-                a = dir('*.dcm');
-                jsonMessedFlag = length(dir('*.dcm.json'));
-                numberOfDCMInFolder = numel(a);
-                for file = 1:min(2, length(a))
+                dcmFiles = dir('*.dcm');
+                
+                numberOfDCMInFolder = numel(dcmFiles);
+                for currentFile = 1:min(2, length(dcmFiles))
                     % Moving the processed full image to the processedPair
                     % folder
-                    imageFilePath = string(a(file).name);
+                    imageFilePath = string(dcmFiles(currentFile).name);
                     dicomInfo = dicominfo(imageFilePath);
 
                     presentationIntentType = string(dicomInfo.PresentationIntentType);
                     presentationFlag = strfind(presentationIntentType, 'PRESENTATION');
 
                     if presentationFlag > 0                     
-                        imageFilePath = string(a(file).name);
+                        imageFilePath = string(dcmFiles(currentFile).name);
                         processedPairLocation = fullfile(strcat(infoFileName, '/MLOpair', '/right', '/processedPair'));
                         copyfile(imageFilePath, processedPairLocation);
                         % Moving the corisponding json to the processedPair
                         % folder
                         [filepath,fileName,ext] = fileparts(imageFilePath);
-                        if jsonMessedFlag > 0
-                            fileName = strcat(fileName, '.dcm');
-                        end                    
+
                         jsonFilePath = strcat(fileName, '.json');
                         copyfile(jsonFilePath, processedPairLocation);
 

@@ -1,7 +1,7 @@
 close all
 clear all
 
-cd /vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/bNoCoordinates
+cd /vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/bUseful
 
 thetaArrayRads = zeros(618,2);
 thetaArrayDegs = zeros(618,2);
@@ -12,14 +12,14 @@ addedTotal = 1;
 D = dir;
 D = D(~ismember({D.name}, {'.', '..'}));
 for k = 1:numel(D)                                               %1:122727
-    subject = D(k).name
+    subject = D(k).name;
     dir(subject);
     
     ccLeftAdded = 0;
     ccRightAdded = 0;
     mloLeftAdded = 0;
     
-    infoFileName = strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/bNoCoordinates/', subject);
+    infoFileName = strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/bUseful/', subject);
     cd(infoFileName);
     % CC
     if isequal(exist('CCpair', 'dir'),7) % 7 means its a folder and exists
@@ -48,7 +48,7 @@ for k = 1:numel(D)                                               %1:122727
                 dcmFiles = dir('*.dcm');
                 for currentFile = 1:length(dcmFiles)
                     fileName = dcmFiles(currentFile).name;
-                    cropFlag = strfind(fileName, 'cropped');
+                    cropFlag = strfind(fileName, 'small');
                     tf = strcmp(subjectCoordFullImageNumber, fileName);
                     if cropFlag > 0
                         croppedSpotFileName = dcmFiles(currentFile).name;
@@ -176,7 +176,7 @@ for k = 1:numel(D)                                               %1:122727
                 dcmFiles = dir('*.dcm');
                 for currentFile = 1:length(dcmFiles)
                     fileName = dcmFiles(currentFile).name;
-                    cropFlag = strfind(fileName, 'cropped');
+                    cropFlag = strfind(fileName, 'small');
                     tf = strcmp(subjectCoordFullImageNumber, fileName);
                     if cropFlag > 0
                         croppedSpotFileName = dcmFiles(currentFile).name;
@@ -316,7 +316,7 @@ for k = 1:numel(D)                                               %1:122727
                 dcmFiles = dir('*.dcm');
                 for currentFile = 1:length(dcmFiles)
                     fileName = dcmFiles(currentFile).name;
-                    cropFlag = strfind(fileName, 'cropped');
+                    cropFlag = strfind(fileName, 'small');
                     tf = strcmp(subjectCoordFullImageNumber, fileName);
                     if cropFlag > 0
                         croppedSpotFileName = dcmFiles(currentFile).name;
@@ -451,7 +451,7 @@ for k = 1:numel(D)                                               %1:122727
             dcmFiles = dir('*.dcm');
             for currentFile = 1:length(dcmFiles)
                 fileName = dcmFiles(currentFile).name;
-                cropFlag = strfind(fileName, 'cropped');
+                cropFlag = strfind(fileName, 'small');
                 tf = strcmp(subjectCoordFullImageNumber, fileName);
                 if cropFlag > 0
                     croppedSpotFileName = dcmFiles(currentFile).name;

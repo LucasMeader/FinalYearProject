@@ -1,16 +1,16 @@
 close all
 
-fullView = dicomread('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful/demd100/CCpair/left/processedPair/1.2.826.0.1.3680043.9.3218.1.1.2695005.4962.1510228559379.3567.0.dcm');
-%spotView = dicomread('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Lucas/ImagePairs/Malignant/SpotCompression/demd57/MLOpair/spotImage/1.2.826.0.1.3680043.9.3218.1.1.2695005.4962.1510228559379.1921.0.dcm');
+fullView = dicomread('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful/demd3499/MLOpair/right/processedPair/1.2.826.0.1.3680043.9.3218.1.1.1478478.5024.1511976368784.4679.0.dcm');
+spotView = dicomread('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful/demd3499/MLOpair/right/processedPair/cropped.1.2.826.0.1.3680043.9.3218.1.1.1478478.5024.1511976368784.4695.0.dcm');
 
 % Obtaining image size data
 [imageHight, imageWidth, imageDepth] = size(fullView);
 
 % Coordinates from json information file
-X1 = 0;
-X2 = 366;
-Y1 = 1307;
-Y2 = 1735;
+X1 = 3193;
+X2 = 3328;
+Y1 = 859;
+Y2 = 1145;
 
 % Coordinate border for visualisation
 XI = [X1, X2, X2, X1, X1];

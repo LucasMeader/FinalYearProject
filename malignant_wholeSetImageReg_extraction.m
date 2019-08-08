@@ -3,12 +3,12 @@ clear all
 
 cd /vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful
 
-benignMLpatches = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bmalignantMLpatches'));
+malignantMLpatches = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bmalignantMLpatches'));
 addedTotal = 1;
 
 D = dir;
 D = D(~ismember({D.name}, {'.', '..'}));
-for k = 1:numel(D)                                               %1:122727
+for k = 294:numel(D)                                               %1:122727
     subject = D(k).name
     dir(subject);
     
@@ -33,20 +33,31 @@ for k = 1:numel(D)                                               %1:122727
                 
                 cd('processedPair');
                 
+                jsonFiles = dir('*.json');
+                for currentFile = 1:length(jsonFiles)
+                    fileName = jsonFiles(currentFile).name;
+                    coordinateFlag = strfind(fileName, 'coordinates');
+                    if coordinateFlag > 0
+                        coordinateFilePath = jsonFiles(currentFile).name;
+                        jsonText = fileread('coordinates.json');
+                        coordinateStruct = jsondecode(jsonText);
+                        subjectCoordFullImageNumber = coordinateStruct.fullImagePath;
+                    end
+                end
+                
                 dcmFiles = dir('*.dcm');
                 for currentFile = 1:length(dcmFiles)
                     fileName = dcmFiles(currentFile).name;
                     cropFlag = strfind(fileName, 'cropped');
-                    
+                    tf = strcmp(subjectCoordFullImageNumber, fileName);
                     if cropFlag > 0
                         croppedSpotFileName = dcmFiles(currentFile).name;
                         croppedSpotImageFilePath = fullfile(strcat(infoFileName, '/CCpair', '/left', '/processedPair/', croppedSpotFileName));
                         croppedSpotImage = dicomread(croppedSpotImageFilePath);
-                        %croppedSpotImage = imrotate(croppedSpotImage, 7, 'bilinear', 'crop');
                         %croppedSpotImage = imcrop(croppedSpotImage, []);
                         [cropImageHight, cropImageWidth, cropImageDepth] = size(croppedSpotImage);
                         cropFlag = 0;
-                    else
+                    elseif tf == 1
                         fullImageFileName = dcmFiles(currentFile).name;
                         fullImageFilePath = fullfile(strcat(infoFileName, '/CCpair', '/left', '/processedPair/', fullImageFileName));
                         fullImage = dicomread(fullImageFilePath);
@@ -55,6 +66,7 @@ for k = 1:numel(D)                                               %1:122727
                         [fullImageHight, fullImageWidth, fullImageDepth] = size(fullImage);
                     end
                 end
+                
                 % Calculate SSD and NCC between Template and Image
                 [I_SSD, I_NCC] = template_matching(croppedSpotImage,fullImage);
                 
@@ -106,7 +118,7 @@ for k = 1:numel(D)                                               %1:122727
 
                 dicomwrite(extractArea, newFileName, dicomInfo, 'CreateMode', 'copy');
                 
-                movefile(sourceFilePath, benignMLpatches)
+                movefile(sourceFilePath, malignantMLpatches)
                 
                 figure('Renderer', 'painters', 'Position', [400 100 1500 600]);
                 subplot(2,3,1), imshow(I_NCC, []); title('NCC Matching'); hold on; line([cropxCenter, cropxCenter], [fullImageHight, 0]); hold on; line([0, fullImageWidth], [cropyCenter, cropyCenter]); hold on; plot(cropxCenter,cropyCenter,'bo'); 
@@ -132,20 +144,31 @@ for k = 1:numel(D)                                               %1:122727
                 
                 cd('processedPair');
                 
+                jsonFiles = dir('*.json');
+                for currentFile = 1:length(jsonFiles)
+                    fileName = jsonFiles(currentFile).name;
+                    coordinateFlag = strfind(fileName, 'coordinates');
+                    if coordinateFlag > 0
+                        coordinateFilePath = jsonFiles(currentFile).name;
+                        jsonText = fileread('coordinates.json');
+                        coordinateStruct = jsondecode(jsonText);
+                        subjectCoordFullImageNumber = coordinateStruct.fullImagePath;
+                    end
+                end
+                
                 dcmFiles = dir('*.dcm');
                 for currentFile = 1:length(dcmFiles)
                     fileName = dcmFiles(currentFile).name;
                     cropFlag = strfind(fileName, 'cropped');
-                    
+                    tf = strcmp(subjectCoordFullImageNumber, fileName);
                     if cropFlag > 0
                         croppedSpotFileName = dcmFiles(currentFile).name;
                         croppedSpotImageFilePath = fullfile(strcat(infoFileName, '/CCpair', '/right', '/processedPair/', croppedSpotFileName));
                         croppedSpotImage = dicomread(croppedSpotImageFilePath);
-                        %croppedSpotImage = imrotate(croppedSpotImage, 7, 'bilinear', 'crop');
                         %croppedSpotImage = imcrop(croppedSpotImage, []);
                         [cropImageHight, cropImageWidth, cropImageDepth] = size(croppedSpotImage);
                         cropFlag = 0;
-                    else
+                    elseif tf == 1
                         fullImageFileName = dcmFiles(currentFile).name;
                         fullImageFilePath = fullfile(strcat(infoFileName, '/CCpair', '/right', '/processedPair/', fullImageFileName));
                         fullImage = dicomread(fullImageFilePath);
@@ -154,6 +177,7 @@ for k = 1:numel(D)                                               %1:122727
                         [fullImageHight, fullImageWidth, fullImageDepth] = size(fullImage);
                     end
                 end
+                
                 % Calculate SSD and NCC between Template and Image
                 [I_SSD, I_NCC] = template_matching(croppedSpotImage,fullImage);
                 
@@ -204,7 +228,7 @@ for k = 1:numel(D)                                               %1:122727
                 
                 dicomwrite(extractArea, newFileName, dicomInfo, 'CreateMode', 'copy');
                 
-                movefile(sourceFilePath, benignMLpatches)
+                movefile(sourceFilePath, malignantMLpatches)
                 
                 figure('Renderer', 'painters', 'Position', [400 100 1500 600]);
                 subplot(2,3,1), imshow(I_NCC, []); title('NCC Matching'); hold on; line([cropxCenter, cropxCenter], [fullImageHight, 0]); hold on; line([0, fullImageWidth], [cropyCenter, cropyCenter]); hold on; plot(cropxCenter,cropyCenter,'bo'); 
@@ -236,20 +260,31 @@ for k = 1:numel(D)                                               %1:122727
                 
                 cd('processedPair');
                 
+                jsonFiles = dir('*.json');
+                for currentFile = 1:length(jsonFiles)
+                    fileName = jsonFiles(currentFile).name;
+                    coordinateFlag = strfind(fileName, 'coordinates');
+                    if coordinateFlag > 0
+                        coordinateFilePath = jsonFiles(currentFile).name;
+                        jsonText = fileread('coordinates.json');
+                        coordinateStruct = jsondecode(jsonText);
+                        subjectCoordFullImageNumber = coordinateStruct.fullImagePath;
+                    end
+                end
+                
                 dcmFiles = dir('*.dcm');
                 for currentFile = 1:length(dcmFiles)
                     fileName = dcmFiles(currentFile).name;
                     cropFlag = strfind(fileName, 'cropped');
-                    
+                    tf = strcmp(subjectCoordFullImageNumber, fileName);
                     if cropFlag > 0
                         croppedSpotFileName = dcmFiles(currentFile).name;
                         croppedSpotImageFilePath = fullfile(strcat(infoFileName, '/MLOpair', '/left', '/processedPair/', croppedSpotFileName));
                         croppedSpotImage = dicomread(croppedSpotImageFilePath);
-                        %croppedSpotImage = imrotate(croppedSpotImage, 7, 'bilinear', 'crop');
                         %croppedSpotImage = imcrop(croppedSpotImage, []);
                         [cropImageHight, cropImageWidth, cropImageDepth] = size(croppedSpotImage);
                         cropFlag = 0;
-                    else
+                    elseif tf == 1
                         fullImageFileName = dcmFiles(currentFile).name;
                         fullImageFilePath = fullfile(strcat(infoFileName, '/MLOpair', '/left', '/processedPair/', fullImageFileName));
                         fullImage = dicomread(fullImageFilePath);
@@ -308,7 +343,7 @@ for k = 1:numel(D)                                               %1:122727
                 
                 dicomwrite(extractArea, newFileName, dicomInfo, 'CreateMode', 'copy');
                 
-                movefile(sourceFilePath, benignMLpatches)
+                movefile(sourceFilePath, malignantMLpatches)
                 
                 figure('Renderer', 'painters', 'Position', [400 100 1500 600]);
                 subplot(2,3,1), imshow(I_NCC, []); title('NCC Matching'); hold on; line([cropxCenter, cropxCenter], [fullImageHight, 0]); hold on; line([0, fullImageWidth], [cropyCenter, cropyCenter]); hold on; plot(cropxCenter,cropyCenter,'bo'); 
@@ -334,28 +369,39 @@ for k = 1:numel(D)                                               %1:122727
                 
                 cd('processedPair');
                 
-                dcmFiles = dir('*.dcm');
-                for currentFile = 1:length(dcmFiles)
-                    fileName = dcmFiles(currentFile).name;
-                    cropFlag = strfind(fileName, 'cropped');
-                    
-                    if cropFlag > 0
-                        croppedSpotFileName = dcmFiles(currentFile).name;
-                        croppedSpotImageFilePath = fullfile(strcat(infoFileName, '/MLOpair', '/right', '/processedPair/', croppedSpotFileName));
-                        croppedSpotImage = dicomread(croppedSpotImageFilePath);
-                        %croppedSpotImage = imrotate(croppedSpotImage, 7, 'bilinear', 'crop');
-                        %croppedSpotImage = imcrop(croppedSpotImage, []);
-                        [cropImageHight, cropImageWidth, cropImageDepth] = size(croppedSpotImage);
-                        cropFlag = 0;
-                    else
-                        fullImageFileName = dcmFiles(currentFile).name;
-                        fullImageFilePath = fullfile(strcat(infoFileName, '/MLOpair', '/right', '/processedPair/', fullImageFileName));
-                        fullImage = dicomread(fullImageFilePath);
-                        dicomInfo = dicominfo(fullImageFilePath);
-                        % Obtaining image size data
-                        [fullImageHight, fullImageWidth, fullImageDepth] = size(fullImage);
-                    end
+            jsonFiles = dir('*.json');
+            for currentFile = 1:length(jsonFiles)
+                fileName = jsonFiles(currentFile).name;
+                coordinateFlag = strfind(fileName, 'coordinates');
+                if coordinateFlag > 0
+                    coordinateFilePath = jsonFiles(currentFile).name;
+                    jsonText = fileread('coordinates.json');
+                    coordinateStruct = jsondecode(jsonText);
+                    subjectCoordFullImageNumber = coordinateStruct.fullImagePath;
                 end
+            end
+            
+            dcmFiles = dir('*.dcm');
+            for currentFile = 1:length(dcmFiles)
+                fileName = dcmFiles(currentFile).name;
+                cropFlag = strfind(fileName, 'cropped');
+                tf = strcmp(subjectCoordFullImageNumber, fileName);
+                if cropFlag > 0
+                    croppedSpotFileName = dcmFiles(currentFile).name;
+                    croppedSpotImageFilePath = fullfile(strcat(infoFileName, '/MLOpair', '/right', '/processedPair/', croppedSpotFileName));
+                    croppedSpotImage = dicomread(croppedSpotImageFilePath);
+                    %croppedSpotImage = imcrop(croppedSpotImage, []);
+                    [cropImageHight, cropImageWidth, cropImageDepth] = size(croppedSpotImage);
+                    cropFlag = 0;
+                elseif tf == 1
+                    fullImageFileName = dcmFiles(currentFile).name;
+                    fullImageFilePath = fullfile(strcat(infoFileName, '/MLOpair', '/right', '/processedPair/', fullImageFileName));
+                    fullImage = dicomread(fullImageFilePath);
+                    dicomInfo = dicominfo(fullImageFilePath);
+                    % Obtaining image size data
+                    [fullImageHight, fullImageWidth, fullImageDepth] = size(fullImage);
+                end
+            end
                 % Calculate SSD and NCC between Template and Image
                 [I_SSD, I_NCC] = template_matching(croppedSpotImage,fullImage);
                 
@@ -406,7 +452,7 @@ for k = 1:numel(D)                                               %1:122727
                 
                 dicomwrite(extractArea, newFileName, dicomInfo, 'CreateMode', 'copy');
                 
-                movefile(sourceFilePath, benignMLpatches)
+                movefile(sourceFilePath, malignantMLpatches)
                 
                 figure('Renderer', 'painters', 'Position', [400 100 1500 600]);
                 subplot(2,3,1), imshow(I_NCC, []); title('NCC Matching'); hold on; line([cropxCenter, cropxCenter], [fullImageHight, 0]); hold on; line([0, fullImageWidth], [cropyCenter, cropyCenter]); hold on; plot(cropxCenter,cropyCenter,'bo'); 

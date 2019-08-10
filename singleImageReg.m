@@ -10,9 +10,10 @@ noCoordinates = zeros(618,2);
 addedTotal = 1;
 noCoordCount = 1;
 
-k = 295;                       %1:122727
-subject = 'demd3329'
-dir(subject);
+D = dir;
+D = D(~ismember({D.name}, {'.', '..'}));
+k = 1:94
+subject = D(k).name;
 
 ccLeftAdded = 0;
 ccRightAdded = 0;

@@ -3,12 +3,12 @@ clear all
 
 cd /vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful
 
-malignantMLpatches = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bmalignantMLpatches'));
+malignantMLpatches = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/b227patches'));
 addedTotal = 1;
 
 D = dir;
 D = D(~ismember({D.name}, {'.', '..'}));
-for k = 294:numel(D)                                               %1:122727
+for k = 1:numel(D)                                               %1:122727
     subject = D(k).name
     dir(subject);
     
@@ -29,7 +29,7 @@ for k = 294:numel(D)                                               %1:122727
             if isequal(exist('processedPair', 'dir'),7)
                 %                 fprintf('Processed Pair Exists\n');
                 
-                newFileName = fullfile(strcat(subject, '_CC', '_Left'));
+                newFileName = fullfile(strcat(subject, '_CC_Left.dcm'));
                 
                 cd('processedPair');
                 
@@ -74,20 +74,20 @@ for k = 294:numel(D)                                               %1:122727
                 [cropyCenter, cropxCenter] = find(I_NCC == max(I_NCC(:)));
                 
                 % Adjusting for border to keep extract crops the same size
-                centerToMaxWidthDif = fullImageWidth-cropxCenter;
-                if centerToMaxWidthDif < 500
-                cropxCenter = cropxCenter-(500+centerToMaxWidthDif);
-                elseif cropxCenter < 500
-                    cropxCenter = cropxCenter+(500-cropxCenter);
-                end
-                
-                % Adjusting for border to keep extract crops the same size
-                centerToMaxHightDif = fullImageHight-cropyCenter;
-                if centerToMaxHightDif < 500
-                cropyCenter = cropyCenter-(500+centerToMaxHightDif);
-                elseif cropyCenter < 500
-                    cropyCenter = cropyCenter+(500-cropyCenter);
-                end
+%                 centerToMaxWidthDif = fullImageWidth-cropxCenter;
+%                 if centerToMaxWidthDif < 500
+%                 cropxCenter = cropxCenter-(500+centerToMaxWidthDif);
+%                 elseif cropxCenter < 500
+%                     cropxCenter = cropxCenter+(500-cropxCenter);
+%                 end
+%                 
+%                 % Adjusting for border to keep extract crops the same size
+%                 centerToMaxHightDif = fullImageHight-cropyCenter;
+%                 if centerToMaxHightDif < 500
+%                 cropyCenter = cropyCenter-(500+centerToMaxHightDif);
+%                 elseif cropyCenter < 500
+%                     cropyCenter = cropyCenter+(500-cropyCenter);
+%                 end
                 
                 CX1 = cropxCenter - cropImageWidth/2;
                 CX2 = cropxCenter + cropImageWidth/2;
@@ -107,15 +107,16 @@ for k = 294:numel(D)                                               %1:122727
                 XExtractBorder = [EX1, EX2, EX2, EX1, EX1];
                 YExtractBorder = [EY1, EY1, EY2, EY2, EY1];
                 
-                extractTopLeftX = cropxCenter - 500;
-                extractTopLeftY = cropyCenter - 500;
+                extractTopLeftX = cropxCenter - 113;
+                extractTopLeftY = cropyCenter - 113;
                 
                 sourceFilePath = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful/', subject,'/CCpair/left/processedPair/', newFileName));
                 
-                
                 %                         rectangle                top left           width hight
-                extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       999 999]);
+                extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       226 226]);
 
+                extractArea(:,:,[1 1 1]);
+                
                 dicomwrite(extractArea, newFileName, dicomInfo, 'CreateMode', 'copy');
                 
                 movefile(sourceFilePath, malignantMLpatches)
@@ -140,7 +141,7 @@ for k = 294:numel(D)                                               %1:122727
             fprintf('CCpair right\n'); 
             if isequal(exist('processedPair', 'dir'),7)
                 %                 fprintf('Processed Pair Exists\n');
-                newFileName = fullfile(strcat(subject, '_CC', '_Right'));
+                newFileName = fullfile(strcat(subject, '_CC_Right.dcm'));
                 
                 cd('processedPair');
                 
@@ -184,21 +185,21 @@ for k = 294:numel(D)                                               %1:122727
                 % Find maximum correspondence in I_SDD image
                 [cropyCenter, cropxCenter] = find(I_NCC == max(I_NCC(:)));
                 
-                % Adjusting for border to keep extract crops the same size
-                centerToMaxWidthDif = fullImageWidth-cropxCenter;
-                if centerToMaxWidthDif < 500
-                    cropxCenter = cropxCenter-(500+centerToMaxWidthDif);
-                elseif cropxCenter < 500
-                    cropxCenter = cropxCenter+(500-cropxCenter);
-                end
-                
-                % Adjusting for border to keep extract crops the same size
-                centerToMaxHightDif = fullImageHight-cropyCenter;
-                if centerToMaxHightDif < 500
-                    cropyCenter = cropyCenter-(500+centerToMaxHightDif);
-                elseif cropyCenter < 500
-                    cropyCenter = cropyCenter+(500-cropyCenter);
-                end
+%                 % Adjusting for border to keep extract crops the same size
+%                 centerToMaxWidthDif = fullImageWidth-cropxCenter;
+%                 if centerToMaxWidthDif < 500
+%                     cropxCenter = cropxCenter-(500+centerToMaxWidthDif);
+%                 elseif cropxCenter < 500
+%                     cropxCenter = cropxCenter+(500-cropxCenter);
+%                 end
+%                 
+%                 % Adjusting for border to keep extract crops the same size
+%                 centerToMaxHightDif = fullImageHight-cropyCenter;
+%                 if centerToMaxHightDif < 500
+%                     cropyCenter = cropyCenter-(500+centerToMaxHightDif);
+%                 elseif cropyCenter < 500
+%                     cropyCenter = cropyCenter+(500-cropyCenter);
+%                 end
                 
                 CX1 = cropxCenter - cropImageWidth/2;
                 CX2 = cropxCenter + cropImageWidth/2;
@@ -218,13 +219,15 @@ for k = 294:numel(D)                                               %1:122727
                 XExtractBorder = [EX1, EX2, EX2, EX1, EX1];
                 YExtractBorder = [EY1, EY1, EY2, EY2, EY1];
                 
-                extractTopLeftX = cropxCenter - 500;
-                extractTopLeftY = cropyCenter - 500;
+                extractTopLeftX = cropxCenter - 113;
+                extractTopLeftY = cropyCenter - 113;
                 
                 sourceFilePath = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful/', subject,'/CCpair/right/processedPair/', newFileName));
                 
                 %                         rectangle                top left            width hight
-                extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       999 999]);
+                extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       226 226]);
+                
+                extractArea(:,:,[1 1 1]);
                 
                 dicomwrite(extractArea, newFileName, dicomInfo, 'CreateMode', 'copy');
                 
@@ -256,7 +259,7 @@ for k = 294:numel(D)                                               %1:122727
             fprintf('MLOpair left\n'); 
             if isequal(exist('processedPair', 'dir'),7)
                 %                 fprintf('Processed Pair Exists\n');
-                newFileName = fullfile(strcat(subject, '_MLO', '_Left'));
+                newFileName = fullfile(strcat(subject, '_MLO_Left.dcm'));
                 
                 cd('processedPair');
                 
@@ -300,20 +303,20 @@ for k = 294:numel(D)                                               %1:122727
                 [cropyCenter, cropxCenter] = find(I_NCC == max(I_NCC(:)));
                 
                 % Adjusting for border to keep extract crops the same size
-                centerToMaxWidthDif = fullImageWidth-cropxCenter;
-                if centerToMaxWidthDif < 500
-                    cropxCenter = cropxCenter-(500+centerToMaxWidthDif);
-                elseif cropxCenter < 500
-                    cropxCenter = cropxCenter+(500-cropxCenter);
-                end
-                
-                % Adjusting for border to keep extract crops the same size
-                centerToMaxHightDif = fullImageHight-cropyCenter;
-                if centerToMaxHightDif < 500
-                    cropyCenter = cropyCenter-(500+centerToMaxHightDif);
-                elseif cropyCenter < 500
-                    cropyCenter = cropyCenter+(500-cropyCenter);
-                end
+%                 centerToMaxWidthDif = fullImageWidth-cropxCenter;
+%                 if centerToMaxWidthDif < 500
+%                     cropxCenter = cropxCenter-(500+centerToMaxWidthDif);
+%                 elseif cropxCenter < 500
+%                     cropxCenter = cropxCenter+(500-cropxCenter);
+%                 end
+%                 
+%                 % Adjusting for border to keep extract crops the same size
+%                 centerToMaxHightDif = fullImageHight-cropyCenter;
+%                 if centerToMaxHightDif < 500
+%                     cropyCenter = cropyCenter-(500+centerToMaxHightDif);
+%                 elseif cropyCenter < 500
+%                     cropyCenter = cropyCenter+(500-cropyCenter);
+%                 end
                 
                 CX1 = cropxCenter - cropImageWidth/2;
                 CX2 = cropxCenter + cropImageWidth/2;
@@ -333,13 +336,15 @@ for k = 294:numel(D)                                               %1:122727
                 XExtractBorder = [EX1, EX2, EX2, EX1, EX1];
                 YExtractBorder = [EY1, EY1, EY2, EY2, EY1];
                 
-                extractTopLeftX = cropxCenter - 500;
-                extractTopLeftY = cropyCenter - 500;
+                extractTopLeftX = cropxCenter - 113;
+                extractTopLeftY = cropyCenter - 113;
                 
                 sourceFilePath = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful/', subject,'/MLOpair/left/processedPair/', newFileName));
                 
                 %                         rectangle                top left            width hight
-                extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       999 999]);
+                extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       226 226]);
+                
+                extractArea(:,:,[1 1 1]);
                 
                 dicomwrite(extractArea, newFileName, dicomInfo, 'CreateMode', 'copy');
                 
@@ -365,7 +370,7 @@ for k = 294:numel(D)                                               %1:122727
             fprintf('MLOpair right\n'); 
             if isequal(exist('processedPair', 'dir'),7)
                 %                 fprintf('Processed Pair Exists\n');
-                newFileName = fullfile(strcat(subject, '_MLO', '_Right'));
+                newFileName = fullfile(strcat(subject, '_MLO_Right.dcm'));
                 
                 cd('processedPair');
                 
@@ -409,20 +414,20 @@ for k = 294:numel(D)                                               %1:122727
                 [cropyCenter, cropxCenter] = find(I_NCC == max(I_NCC(:)));
                 
                 % Adjusting for border to keep extract crops the same size
-                centerToMaxWidthDif = fullImageWidth-cropxCenter;
-                if centerToMaxWidthDif < 500
-                    cropxCenter = cropxCenter-(500+centerToMaxWidthDif);
-                elseif cropxCenter < 500
-                    cropxCenter = cropxCenter+(500-cropxCenter);
-                end
-                
-                % Adjusting for border to keep extract crops the same size
-                centerToMaxHightDif = fullImageHight-cropyCenter;
-                if centerToMaxHightDif < 500
-                    cropyCenter = cropyCenter-(500+centerToMaxHightDif);
-                elseif cropyCenter < 500
-                    cropyCenter = cropyCenter+(500-cropyCenter);
-                end
+%                 centerToMaxWidthDif = fullImageWidth-cropxCenter;
+%                 if centerToMaxWidthDif < 500
+%                     cropxCenter = cropxCenter-(500+centerToMaxWidthDif);
+%                 elseif cropxCenter < 500
+%                     cropxCenter = cropxCenter+(500-cropxCenter);
+%                 end
+%                 
+%                 % Adjusting for border to keep extract crops the same size
+%                 centerToMaxHightDif = fullImageHight-cropyCenter;
+%                 if centerToMaxHightDif < 500
+%                     cropyCenter = cropyCenter-(500+centerToMaxHightDif);
+%                 elseif cropyCenter < 500
+%                     cropyCenter = cropyCenter+(500-cropyCenter);
+%                 end
                 
                 CX1 = cropxCenter - cropImageWidth/2;
                 CX2 = cropxCenter + cropImageWidth/2;
@@ -442,13 +447,15 @@ for k = 294:numel(D)                                               %1:122727
                 XExtractBorder = [EX1, EX2, EX2, EX1, EX1];
                 YExtractBorder = [EY1, EY1, EY2, EY2, EY1];
                 
-                extractTopLeftX = cropxCenter - 500;
-                extractTopLeftY = cropyCenter - 500;
+                extractTopLeftX = cropxCenter - 113;
+                extractTopLeftY = cropyCenter - 113;
                 
                 sourceFilePath = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful/', subject, '/MLOpair/right/processedPair/', newFileName));
                 
                 %                         rectangle                top left            width hight
-                extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       999 999]);
+                extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       226 226]);
+                
+                extractArea(:,:,[1 1 1]);
                 
                 dicomwrite(extractArea, newFileName, dicomInfo, 'CreateMode', 'copy');
                 

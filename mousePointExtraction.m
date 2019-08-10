@@ -81,8 +81,12 @@ for k = 1:numel(D)                                               %1:122727
                         %             rectangle            top left      width hight
                         fullViewCoordArea = imcrop(fullImage,  [FX1 FY1       FX2-FX1 FY2-FY1]);
                         
-                        % Resize spotView image in   percentage
-                        %downSizedCroppedSpot = imresize(croppedSpot, 1);
+                        
+                        
+%                         figure,
+%                         imshow(fullImage, []);
+%                         
+%                         [x,y] = ginput(1)
                         
                         % Centre of the coordinate rectangle
                         coordxCenter = ((FX2+FX1)/2);
@@ -91,21 +95,6 @@ for k = 1:numel(D)                                               %1:122727
                         originalXCenter = coordxCenter;
                         originalYCenter = coordyCenter;
                         
-                        % Adjusting for border to keep extract crops the same size
-%                         centerToMaxWidthDif = fullImageWidth-coordxCenter;
-%                         if centerToMaxWidthDif < 500
-%                             coordxCenter = coordxCenter-(500+centerToMaxWidthDif);
-%                         elseif coordxCenter < 500
-%                             coordxCenter = coordxCenter+(500-coordxCenter);
-%                         end
-%                         
-%                         % Adjusting for border to keep extract crops the same size
-%                         centerToMaxHightDif = fullImageHight-coordyCenter;
-%                         if centerToMaxHightDif < 500
-%                             coordyCenter = coordyCenter-(500+centerToMaxHightDif);
-%                         elseif coordyCenter < 500
-%                             coordyCenter = coordyCenter+(500-coordyCenter);
-%                         end
                         
                         EX1 = coordxCenter - 500;
                         EX2 = coordxCenter + 500;
@@ -123,6 +112,13 @@ for k = 1:numel(D)                                               %1:122727
                         
                         %                         rectangle                top left           width hight
                         extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       226 226]);
+                        
+                        figure('units','normalized','outerposition',[0 0 1 1])
+                        subplot(1,2,1), imshow(fullImage, []); title('Full Processed Image'); hold on; line([coordxCenter, coordxCenter], [fullImageHight, 0]); hold on; line([0, fullImageWidth], [coordyCenter, coordyCenter]); hold on; plot(originalXCenter,originalYCenter,'bo'); plot(XExtractBorder, YExtractBorder, 'g-', 'LineWidth', 1); hold on; 
+                        subplot(1,2,2), imshow(extractArea, []); title('Extract Patch (Green)');
+                        
+                        [x,y] = ginput(1)
+                        
                         
                         dicomwrite(extractArea, newFileName, dicomInfo, 'CreateMode', 'copy');
                         

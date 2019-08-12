@@ -34,7 +34,7 @@ for k = 1:171
     fullImageFilePath270 = fullfile(strcat(source, subject_r270));
     
     fullImage = dicomread(fullImageFilePath);
-    imshow(fullImage, []);
+    %imshow(fullImage, []);
     dicomInfo = dicominfo(fullImageFilePath);
     rotated90 = imrotate(fullImage, 90, 'bilinear', 'crop');
     rotated180 = imrotate(fullImage, 180, 'bilinear', 'crop');
@@ -78,11 +78,11 @@ for k = 1:171
     fullImageFilePathfr270 = fullfile(strcat(source, subject_fr270));
     
     fullImage = dicomread(fullImageFilePath);
-    imshow(fullImage, []);
+    %imshow(fullImage, []);
     dicomInfo = dicominfo(fullImageFilePath);
-    frotated90 = imrotate(fullImage, 90, 'bilinear', 'crop');
-    frotated180 = imrotate(fullImage, 180, 'bilinear', 'crop');
-    frotated270 = imrotate(fullImage, 270, 'bilinear', 'crop');
+    frotated90 = imrotate(flippedImage, 90, 'bilinear', 'crop');
+    frotated180 = imrotate(flippedImage, 180, 'bilinear', 'crop');
+    frotated270 = imrotate(flippedImage, 270, 'bilinear', 'crop');
 %     subplot(2,2,1), imshow(fullImage, []);
 %     subplot(2,2,2), imshow(rotated90, []);
 %     subplot(2,2,3), imshow(rotated180, []);

@@ -100,7 +100,7 @@ for k = 1:numel(D)                                               %1:122727
                         [I_SSD, I_NCC] = template_matching(croppedSpotImage,fullImage);
                         
                         % Find maximum correspondence in I_SDD image
-                        [cropyCenter, cropxCenter] = find(I_NCC == max(I_NCC(:)));
+                        [cropyCenter, cropxCenter] = find(I_SSD == max(I_SSD(:)));
                         
                         CX1 = cropxCenter - cropImageWidth/2;
                         CX2 = cropxCenter + cropImageWidth/2;
@@ -227,7 +227,7 @@ for k = 1:numel(D)                                               %1:122727
                         [I_SSD, I_NCC] = template_matching(croppedSpotImage,fullImage);
                         
                         % Find maximum correspondence in I_SDD image
-                        [cropyCenter, cropxCenter] = find(I_NCC == max(I_NCC(:)));
+                        [cropyCenter, cropxCenter] = find(I_SSD == max(I_SSD(:)));
                         
                         CX1 = cropxCenter - cropImageWidth/2;
                         CX2 = cropxCenter + cropImageWidth/2;
@@ -375,7 +375,7 @@ for k = 1:numel(D)                                               %1:122727
                         [I_SSD, I_NCC] = template_matching(croppedSpotImage,fullImage);
                         
                         % Find maximum correspondence in I_SDD image
-                        [cropyCenter, cropxCenter] = find(I_NCC == max(I_NCC(:)));
+                        [cropyCenter, cropxCenter] = find(I_SSD == max(I_SSD(:)));
                         
                         CX1 = cropxCenter - cropImageWidth/2;
                         CX2 = cropxCenter + cropImageWidth/2;
@@ -502,7 +502,7 @@ for k = 1:numel(D)                                               %1:122727
                         [I_SSD, I_NCC] = template_matching(croppedSpotImage,fullImage);
                         
                         % Find maximum correspondence in I_SDD image
-                        [cropyCenter, cropxCenter] = find(I_NCC == max(I_NCC(:)));
+                        [cropyCenter, cropxCenter] = find(I_SSD == max(I_SSD(:)));
                         
                         CX1 = cropxCenter - cropImageWidth/2;
                         CX2 = cropxCenter + cropImageWidth/2;

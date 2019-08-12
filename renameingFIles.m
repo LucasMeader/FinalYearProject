@@ -7,15 +7,21 @@ source = '/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/trainingSet
 
 D = dir;
 D = D(~ismember({D.name}, {'.', '..'}));
-for k = 6:numel(D)
-    subject = D(k).name;
+for k = 7:numel(D)
+    subjectDCM = D(k).name;
+    
+    subject = erase(subjectDCM, '.dcm');
+    
+    subjectTIF = strcat(source, subject, '.tif');
     
     fullImageFilePath = fullfile(strcat(source, subject));
     
-    fullImage = imread(fullImageFilePath);
+    fullImage = dicomread(fullImageFilePath);
     
     fullImage3d = repmat(fullImage, 1, 1, 3);
     
-    imwrite(fullImage3d, subject);
+    imwrite(fullImage3d, subjectTIF);
+    
+    delete(subjectDCM);
     
 end

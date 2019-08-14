@@ -1,9 +1,9 @@
 close all
 clear all
 
-cd /vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful
+cd /vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/withCoordinates
 
-malignantMLpatches = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/b227patches'));
+malignantMLpatches = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/coordinateBasedMLpatches_benign'));
 addedTotal = 1;
 
 D = dir;
@@ -16,7 +16,7 @@ for k = 1:numel(D)                                               %1:122727
     ccRightAdded = 0;
     mloLeftAdded = 0;
     
-    infoFileName = strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful/', subject);
+    infoFileName = strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/withCoordinates/', subject);
     cd(infoFileName);
     % CC
     if isequal(exist('CCpair', 'dir'),7) % 7 means its a folder and exists
@@ -119,7 +119,7 @@ for k = 1:numel(D)                                               %1:122727
                         extractTopLeftX = coordxCenter - 113;
                         extractTopLeftY = coordyCenter - 113;
                         
-                        sourceFilePath = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful//', subject,'/CCpair/left/processedPair/', newFileName));
+                        sourceFilePath = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/withCoordinates/', subject,'/CCpair/left/processedPair/', newFileName));
                         
                         %                         rectangle                top left           width hight
                         extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       226 226]);
@@ -238,7 +238,7 @@ for k = 1:numel(D)                                               %1:122727
                     extractTopLeftX = coordxCenter - 113;
                     extractTopLeftY = coordyCenter - 113;
                     
-                    sourceFilePath = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful//', subject,'/CCpair/right/processedPair/', newFileName));
+                    sourceFilePath = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/withCoordinates/', subject,'/CCpair/right/processedPair/', newFileName));
                     
                     %                         rectangle                top left           width hight
                     extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       226 226]);
@@ -360,7 +360,7 @@ for k = 1:numel(D)                                               %1:122727
                         extractTopLeftX = coordxCenter - 113;
                         extractTopLeftY = coordyCenter - 113;
                         
-                        sourceFilePath = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful/', subject,'/MLOpair/left/processedPair/', newFileName));
+                        sourceFilePath = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/withCoordinates/', subject,'/MLOpair/left/processedPair/', newFileName));
                         
                         %                         rectangle                top left           width hight
                         extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       226 226]);
@@ -476,7 +476,7 @@ for k = 1:numel(D)                                               %1:122727
                         extractTopLeftX = coordxCenter - 113;
                         extractTopLeftY = coordyCenter - 113;
                         
-                        sourceFilePath = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/bUseful/', subject,'/MLOpair/right/processedPair/', newFileName));
+                        sourceFilePath = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/withCoordinates/', subject,'/MLOpair/right/processedPair/', newFileName));
                         
                         %                         rectangle                top left           width hight
                         extractArea = imcrop(fullImage,  [extractTopLeftX extractTopLeftY       226 226]);

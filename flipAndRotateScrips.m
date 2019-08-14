@@ -1,17 +1,17 @@
 close all
 clear all
 
-cd /vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/benignMousePointExtraction
+cd /vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/coordinateBasedMLpatches_benign
 
-source = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/benignMousePointExtraction/'));
-flippedSource = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated/Flipped/'));
-destinationFlipped = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated/Flipped'));
-destination90 = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated/Rotated90'));
-destination180 = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated/Rotated180'));
-destination270 = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated/Rotated270'));
-destinationFlippedRotated90 = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated/FlippedAndRotated90'));
-destinationFlippedRotated180 = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated/FlippedAndRotated180'));
-destinationFlippedRotated270 = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated/FlippedAndRotated270'));
+source = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/coordinateBasedMLpatches_benign/'));
+flippedSource = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated_Coordnate/Flipped/'));
+destinationFlipped = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated_Coordnate/Flipped'));
+destination90 = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated_Coordnate/Rotated90'));
+destination180 = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated_Coordnate/Rotated180'));
+destination270 = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated_Coordnate/Rotated270'));
+destinationFlippedRotated90 = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated_Coordnate/FlippedAndRotated90'));
+destinationFlippedRotated180 = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated_Coordnate/FlippedAndRotated180'));
+destinationFlippedRotated270 = fullfile(strcat('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/FlippedAndRotated_Coordnate/FlippedAndRotated270'));
 
 
 D = dir;

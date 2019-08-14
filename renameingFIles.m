@@ -1,13 +1,13 @@
 close all
 clear all
 
-cd /vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/trainingSets/benign
+cd /vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/b227patchesFlipped
 
-source = '/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/trainingSets/benign/';
+source = '/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Malignant/b227patchesFlipped/';
 
 D = dir;
 D = D(~ismember({D.name}, {'.', '..'}));
-for k = 7:numel(D)
+for k = 1 :numel(D)
     subjectDCM = D(k).name;
     
     subject = erase(subjectDCM, '.dcm');

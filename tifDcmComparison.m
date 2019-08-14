@@ -1,0 +1,2 @@
+dcmImage = dicomread('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/Benign/benignMousePointExtraction/demd47284_CC_Left.dcm');
+tifImage = imread('/vol/vssp/ucdatasets/mammo2/TotalRecall/OptimamData/Images/trainingSets/benign/demd47284_CC_Left.tif');
